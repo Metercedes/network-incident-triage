@@ -4,8 +4,8 @@ Reads a pcap or pcapng and produces the views an analyst opens first: host inven
 DNS and TLS server names, HTTP request metadata, an investigation timeline, and findings for port
 scans, host sweeps, beaconing and cleartext form posts. Output is Markdown, JSON or CSV.
 
-The capture parser is written from the format specifications rather than wrapping a library, and
-the test suite checks its output against tshark on every fixture: packet counts, timestamps, frame
+The capture parser is written from the format specifications, not wrapped around a library, and the
+test suite checks its output against tshark on every fixture: packet counts, timestamps, frame
 lengths, addresses, ports, TCP flags, DNS names and answers, TLS server names, and HTTP hosts and
 URIs all have to agree.
 
@@ -89,8 +89,8 @@ not recorded. Nothing here is anyone's traffic. Building them means each scenari
 the behaviour a test needs: the beacon capture has irregular browsing to a second host alongside
 the regular check-ins, so the tests can assert the heuristic distinguishes them.
 
-Every capture is checked to open cleanly in tshark, which is also what confirms they are
-well-formed rather than merely parseable by this code.
+Every capture is checked to open cleanly in tshark, which is what confirms they are well-formed and
+not merely parseable by the code that made them.
 
 ## Sample output
 
