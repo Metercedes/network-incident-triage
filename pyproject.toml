@@ -1,0 +1,29 @@
+[project]
+name = "netriage"
+version = "1.0.0"
+description = "PCAP triage: flows, DNS, TLS SNI, HTTP metadata, scan and beaconing heuristics"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[project.scripts]
+netriage = "netriage.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["netriage"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "C4", "RET", "PTH"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

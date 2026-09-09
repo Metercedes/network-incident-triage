@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install tshark
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y tshark
+      - run: pip install -e ".[dev]"
+      - name: Lint
+        run: ruff check .
+      - name: Format check
+        run: ruff format --check .
+      - name: Tests, including cross-validation against tshark
+        run: pytest -q
+      - name: Confirm the tshark comparison actually ran
+        run: pytest tests/test_against_tshark.py -q --no-header | tail -1 | grep -qv "skipped"
+
+  generated-artifacts-are-current:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - run: pip install -e ".[dev]"
+      - name: Regenerate captures and example reports
+        run: |
+          python scripts/generate_captures.py
+          netriage report tests/fixtures/browsing.pcap -o docs/example-browsing-report.md
+          netriage report tests/fixtures/beacon.pcap -o docs/example-beacon-report.md
+      - name: Fail if regeneration changed anything
+        run: git diff --exit-code
